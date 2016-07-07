@@ -14,6 +14,7 @@ PhotoFileUtils = require("./lib/photo_file_utils")
 StubCameraControl = require("./lib/stub_camera_control")
 CameraControl = require("./lib/camera_control")
 ImageCompositor = require("./lib/image_compositor")
+UploadToWedPics = require("./lib/upload_to_wedpics")
 
 exp = express()
 web = http.createServer(exp)
@@ -80,6 +81,8 @@ io.sockets.on "connection", (websocket) ->
         console.log "Printing image at ", output_file_path
         exec "lpr -o #{process.env.PRINTER_IMAGE_ORIENTATION} -o media=\"#{process.env.PRINTER_MEDIA}\" #{output_file_path}"
       websocket.broadcast.emit "composited_image", PhotoFileUtils.photo_path_to_url(output_file_path)
+
+      new UploadToWedPics({ file_path: output_file_path })
 
     compositer.on "generated_thumb", (thumb_path) ->
       websocket.broadcast.emit "generated_thumb", PhotoFileUtils.photo_path_to_url(thumb_path)
